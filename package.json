@@ -1,0 +1,25 @@
+{
+  "name": "new-project",
+  "version": "1.0.0",
+  "description": "Ikhaya Backroom MVP",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.20",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "multer": "^2.1.1",
+    "sharp": "^0.34.5",
+    "zod": "^4.3.6"
+  }
+}
