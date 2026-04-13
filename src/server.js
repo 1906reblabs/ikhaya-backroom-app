@@ -33,9 +33,8 @@ app.use((error, _req, res, _next) => {
 
 async function start() {
   await initializeDatabase();
-  app.listen(port, () => {
-    console.log(`Ikhaya Backroom MVP running on http://localhost:${port}`);
-  });
 }
 
 start();
+// export for Vercel
+module.exports = app;
