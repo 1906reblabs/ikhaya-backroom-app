@@ -24,3 +24,5 @@ Mobile-first rental discovery platform for Gauteng backrooms, optimized for low 
 
 - System component breakdown: [docs/architecture.md](/C:/Users/simph/Documents/New%20project/docs/architecture.md)
 - Database schema: [docs/database-schema.sql](/C:/Users/simph/Documents/New%20project/docs/database-schema.sql)
+- Railway deployment guide: [docs/deployment-railway.md](/C:/Users/simph/Documents/New%20project/docs/deployment-railway.md)
+- Railway deploy checklist: [docs/deployment-checklist-railway.md](/C:/Users/simph/Documents/New%20project/docs/deployment-checklist-railway.md)
