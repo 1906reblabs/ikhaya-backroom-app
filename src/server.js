@@ -5,6 +5,8 @@ const rateLimit = require("express-rate-limit");
 
 const { uploadsDir } = require("./config/env");
 const { initializeDatabase } = require("./db");
+
+initializeDatabase();
 const apiRoutes = require("./routes/api");
 
 const app = express();
