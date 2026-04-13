@@ -7,7 +7,7 @@ const dbPath = process.env.VERCEL
   : path.join(__dirname, "../../data.db");
 
 // Create DB instance
-const {db} = new Database(dbPath);
+const db = new Database(dbPath);
 
 // Initialize tables
 function initializeDatabase() {
