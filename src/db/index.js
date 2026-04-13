@@ -1,30 +1,26 @@
+const fs = require("fs");
 const Database = require("better-sqlite3");
-const path = require("path");
 
-// Use /tmp for Vercel (writable but temporary)
-const dbPath = process.env.VERCEL
-  ? "/tmp/data.db"
-  : path.join(__dirname, "../../data.db");
+const { dataDir, uploadsDir, dbPath } = require("../config/env");
+const { schemaSql } = require("./schema");
+const { seedDatabase } = require("./seed");
 
-// Create DB instance
+fs.mkdirSync(dataDir, { recursive: true });
+fs.mkdirSync(uploadsDir, { recursive: true });
+
 const db = new Database(dbPath);
+db.pragma("foreign_keys = ON");
+db.pragma("journal_mode = WAL");
+db.exec(schemaSql);
 
-// Initialize tables
-function initializeDatabase() {
-  db.prepare(`
-    CREATE TABLE IF NOT EXISTS listings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT,
-      price INTEGER,
-      location TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `).run();
+let initialized = false;
 
-  console.log("Database initialized at:", dbPath);
+async function initializeDatabase() {
+  if (!initialized) {
+    await seedDatabase(db);
+    initialized = true;
+  }
+  return db;
 }
 
-module.exports = {
-  db, // ✅ THIS FIXES YOUR CRASH
-  initializeDatabase
-};
+module.exports = { db, initializeDatabase };
