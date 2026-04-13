@@ -33,7 +33,7 @@ const publicPath = path.join(process.cwd(), "public");
 app.use(express.static(publicPath, { extensions: ["html"] }));
 
 // ✅ FIXED catch-all route
-app.get("*", (_req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(publicPath, "index.html"));
 });
 
