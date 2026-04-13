@@ -1,26 +1,18 @@
 const fs = require("fs");
-const Database = require("better-sqlite3");
+const path = require("path");
 
-const { dataDir, uploadsDir, dbPath } = require("../config/env");
-const { schemaSql } = require("./schema");
-const { seedDatabase } = require("./seed");
+// Use /tmp for Vercel (writable, but temporary)
+const dataDir = process.env.VERCEL
+  ? "/tmp/data"
+  : path.join(__dirname, "../../data");
 
-fs.mkdirSync(dataDir, { recursive: true });
-fs.mkdirSync(uploadsDir, { recursive: true });
-
-const db = new Database(dbPath);
-db.pragma("foreign_keys = ON");
-db.pragma("journal_mode = WAL");
-db.exec(schemaSql);
-
-let initialized = false;
-
-async function initializeDatabase() {
-  if (!initialized) {
-    await seedDatabase(db);
-    initialized = true;
-  }
-  return db;
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
 }
 
-module.exports = { db, initializeDatabase };
+module.exports = {
+  initializeDatabase: async () => {
+    console.log("Database initialized at:", dataDir);
+  },
+  dataDir
+};
