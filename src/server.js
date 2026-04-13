@@ -3,56 +3,43 @@ const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 
-const { uploadsDir } = require("./config/env");
+const { host, port, uploadsDir } = require("./config/env");
 const { initializeDatabase } = require("./db");
-
-initializeDatabase();
 const apiRoutes = require("./routes/api");
 
 const app = express();
 
-app.set("trust proxy", 1);
-
-// middleware
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use("/api", rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
 
-// rate limiting
-if (!process.env.VERCEL) {
-  app.use("/api", rateLimit({
-    windowMs: 60 * 1000,
-    max: 120,
-  }));
+app.use("/uploads", express.static(uploadsDir, { maxAge: "7d" }));
+app.use("/api", apiRoutes);
+app.use(express.static(path.join(__dirname, "..", "public"), { extensions: ["html"] }));
+
+app.get("/health", (_req, res) => {
+  res.json({ ok: true });
+});
+
+app.get("/{*any}", (_req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
+
+app.use((error, _req, res, _next) => {
+  res.status(error.statusCode || 500).json({ error: error.message || "Something went wrong." });
+});
+
+async function start() {
+  await initializeDatabase();
+  app.listen(port, host, () => {
+    console.log(`Ikhaya Backroom MVP running on http://${host}:${port}`);
+  });
 }
 
-// static uploads
-app.use("/uploads", express.static(uploadsDir, { maxAge: "7d" }));
-
-// API routes
-app.use("/api", apiRoutes);
-
-// static frontend
-const publicPath = path.join(process.cwd(), "public");
-app.use(express.static(publicPath, { extensions: ["html"] }));
-
-// ✅ FIXED catch-all route
-app.use((req, res) => {
-  res.sendFile(path.join(publicPath, "index.html"));
-});
-
-// error handler
-app.use((error, _req, res, _next) => {
-  console.error(error);
-  res.status(error.statusCode || 500).json({
-    error: error.message || "Something went wrong."
-  });
-});
-
-// ✅ IMPORTANT: initialize DB safely
-initializeDatabase().catch((err) => {
-  console.error("Database init failed:", err);
-});
-
-// export for Vercel
-module.exports = app;
+start();
